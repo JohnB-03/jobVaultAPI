@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersController } from './users/controller/users.controller';
-import { UsersModule } from './users/users.module';
-import {ConfigService, ConfigModule} from '@nestjs/config';
+import {ConfigService} from '@nestjs/config';
 import {TypeOrmModule } from '@nestjs/typeorm';
 import { DbConfigModule } from './config/config.module';
+import { UsersModule } from './users/users.module';
+import { ApplicationsModule } from './applications/applications.module';
 
 @Module(
   {
@@ -23,14 +23,12 @@ import { DbConfigModule } from './config/config.module';
                     username: configService.get('database.username'),
                     password: configService.get('database.password'),
                     database: configService.get('database.name'),
-                    entities: [],
+                    entities: ['**/*.entity.ts'],
                     synchronize: false,    
                   }),
-
-              inject: [ConfigService],
-              })
+              }), ApplicationsModule
             ],
-  controllers: [AppController, UsersController],
+  controllers: [AppController],
   providers: [AppService],
 })
 
