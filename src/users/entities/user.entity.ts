@@ -3,33 +3,33 @@ import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm
 @Entity()
 export class User { 
    @PrimaryGeneratedColumn("uuid")
-   id: string
+   id!: string
 
    @Column({
       nullable: false
    })
-   name: string
+   name!: string
 
    @Column(
       {
          nullable: false
       }
    )
-   first_name : string
+   first_name!: string
 
    @Column(
       {
          nullable: false
       }
    )
-   birthdate: Date
+   birthdate!: Date
 
    @Column({
       nullable: false,
       unique: true
    }
    )
-   email: string
+   email!: string
 
    @Column(
       "varchar" ,
@@ -38,8 +38,8 @@ export class User {
          nullable: false
       }
    )
-   password: string
+   password!: string
 
    @CreateDateColumn()
-   createdAt: Date
+   createdAt!: Date
 }
