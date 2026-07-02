@@ -6,13 +6,13 @@ export class CreateUserDto {
    name!:string;
 
    @IsNotEmpty()
-   firstName!: string;
+   first_name!: string;
 
    @IsEmail()
    email!: string;
    
    @IsDate()
-   birthDate!: Date;
+   birthdate!: Date;
 
    @IsNotEmpty()
    password!: string;
