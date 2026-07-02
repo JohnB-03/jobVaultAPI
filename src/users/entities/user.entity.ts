@@ -1,7 +1,7 @@
 import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity()
-export class User { 
+export class Users { 
    @PrimaryGeneratedColumn("uuid")
    id!: string
 
@@ -41,5 +41,5 @@ export class User {
    password!: string
 
    @CreateDateColumn()
-   createdAt!: Date
+   created_at!: Date
 }
