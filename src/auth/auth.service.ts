@@ -1,13 +1,17 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
-import { validate, validateOrReject } from 'class-validator';
-import { IsEmail } from 'sequelize-typescript';
+import { SignInDto } from './dto/sign-in.dto';
+import { Users } from '../users/entities/user.entity';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-   constructor(private readonly usersService: UsersService) {}
+   constructor(
+      private readonly usersService: UsersService,
+      private readonly jwtService: JwtService
+   ) {}
 
    async signUp(createUserDto: CreateUserDto) {
       //Check if email doesn't exsit else send error
@@ -21,8 +25,21 @@ export class AuthService {
       }      
    }
 
-   logIn(){
-      return 'This actions connect the user and return the token';
+   async logIn(signInDto: SignInDto): Promise<{access_Token:string}>{
+      const user: Users|null = await this.usersService.findByEmail(signInDto.email);
+      // Check if mail exist
+      if(user) {  
+         const isMatch = await bcrypt.compare(signInDto.password, user.password);
+         if(isMatch) {
+            //créer le token ici
+            const payload = {sub: user.id}
+            const access_Token: string = await this.jwtService.signAsync(payload);
+            //inclure le type et le temps de durée du token;
+            return {access_Token};
+         }
+         throw new UnauthorizedException(); 
+      }
+      throw new ConflictException();
    }
 
    logOut(){

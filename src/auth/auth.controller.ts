@@ -1,7 +1,7 @@
 import {Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import {CreateUserDto} from '../users/dto/create-user.dto';
 import {AuthService } from './auth.service';
-import { isDate, validate, validateOrReject } from 'class-validator';
+import {SignInDto} from './dto/sign-in.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,7 +13,7 @@ export class AuthController {
   
    // signUP 
    @Post('signUp/')
-   @HttpCode(201)
+   @HttpCode(HttpStatus.CREATED)
    async signUp(@Body() entity) {
       const createUserDto: CreateUserDto = {... entity, birthdate: new Date(entity.birthdate)};
       await this.authService.signUp(createUserDto);
@@ -22,9 +22,10 @@ export class AuthController {
 
    // log in  
    //this the request to connect and create the token
-   @Post('logIn/')
-   logIn(){
-    return null;
+   @Post('signIn/')
+   @HttpCode(HttpStatus.ACCEPTED)
+   async logIn(@Body() signInDto: SignInDto){
+      return await this.authService.logIn(signInDto);
    }
 
    // log out 
