@@ -1,8 +1,9 @@
-import {Controller, Post, Body, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import {Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Delete } from '@nestjs/common';
 import {CreateUserDto} from '../users/dto/create-user.dto';
 import {AuthService } from './auth.service';
 import {SignInDto} from './dto/sign-in.dto';
 import { AuthGuard } from './auth.guard';
+import {Public} from './public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -13,6 +14,7 @@ export class AuthController {
    constructor(private readonly authService: AuthService) {}
   
    // signUP 
+   @Public()
    @Post('signUp')
    @HttpCode(HttpStatus.CREATED)
    async signUp(@Body() entity) {
@@ -23,6 +25,7 @@ export class AuthController {
 
    // log in  
    //this the request to connect and create the token
+   @Public()
    @Post('signIn')
    @HttpCode(HttpStatus.ACCEPTED)
    async logIn(@Body() signInDto: SignInDto){
@@ -30,9 +33,8 @@ export class AuthController {
    }
    
    // log out 
-   @UseGuards(AuthGuard)
-   @Post('logOut')
+   @Delete('logOut')
    logOut(){
-    return null;
+    return "it done wel done just for testing";
    }
 }
