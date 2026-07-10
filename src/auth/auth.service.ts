@@ -43,6 +43,8 @@ export class AuthService {
    }
 
    logOut(){
+      //récupérer le token et le détruire maintenant
+      
       return 'This actions destroy the token and cant do request'
    }
 }
