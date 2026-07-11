@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete, UseGuards, HttpStatus, HttpCode } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { onlyAdmin } from '../authorization/roles.decorator';
@@ -11,15 +11,20 @@ export class UsersController {
   // only put rolesguard because authguard is global and execute first
   @onlyAdmin()
   @UseGuards(RolesGuard)
-  @Get()
+  @Get('all')
   findAll() {
     return this.usersService.findAll();
   }
 
+  @Get('me')
+  @HttpCode(HttpStatus.FOUND)
+  async findMe() {
+    return await this.usersService.findMe();
+  }
 
   @onlyAdmin()
   @UseGuards(RolesGuard)
-  @Get(':id')
+  @Get('id/:id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }

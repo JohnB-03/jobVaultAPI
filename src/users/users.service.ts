@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {Users} from './entities/user.entity';
+import { identity } from 'rxjs';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +17,11 @@ export class UsersService {
   ) {}
 
    
+  async findMe(id:string): Promise<Users> {
+    const user:Users|null  = await this.usersRepository.findOne({where: {id}});
+    if(!user) throw new UnauthorizedException;
+    return user;
+  }
   findAll() {
     return `This action returns all users`;
   }
@@ -33,7 +39,7 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<Users | null>{
-    return await this.usersRepository.findOne({where: {email:email}});
+    return await this.usersRepository.findOne({where: {email}});
   }
 
   async create(createUserDto : CreateUserDto) {
