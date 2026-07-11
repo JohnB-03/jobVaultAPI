@@ -42,4 +42,11 @@ export class Users {
 
    @CreateDateColumn()
    created_at!: Date
+
+   @Column(
+      {
+         nullable: false,
+         default: false}
+   )
+   is_admin!: boolean
 }

@@ -32,7 +32,7 @@ export class AuthService {
          const isMatch = await bcrypt.compare(signInDto.password, user.password);
          if(isMatch) {
             //créer le token ici
-            const payload = {sub: user.id}
+            const payload = {sub: user.id, isAdmin:false}
             const access_Token: string = await this.jwtService.signAsync(payload);
             //inclure le type et le temps de durée du token;
             return {access_Token};
@@ -42,11 +42,6 @@ export class AuthService {
       throw new ConflictException();
    }
 
-   logOut(){
-      //récupérer le token et le détruire maintenant
-      
-      return 'This actions destroy the token and cant do request'
-   }
 }
 
 
