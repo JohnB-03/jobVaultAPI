@@ -1,10 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {Users} from './entities/user.entity';
-import { identity } from 'rxjs';
+
 
 @Injectable()
 export class UsersService {
@@ -16,14 +16,16 @@ export class UsersService {
     private usersRepository: Repository<Users>,
   ) {}
 
-   
   async findMe(id:string): Promise<Users> {
     const user:Users|null  = await this.usersRepository.findOne({where: {id}});
     if(!user) throw new UnauthorizedException;
     return user;
   }
-  findAll() {
-    return `This action returns all users`;
+
+  async findAll(): Promise<Users[]> {
+    const users:Users[] = await this.usersRepository.find();
+    if(!users) throw new NotFoundException;
+    return users;
   }
 
   findOne(id: number) {
@@ -35,6 +37,8 @@ export class UsersService {
   }
 
   remove(id: number) {
+    //I'll not delete in the system directly but i'll save the data 
+    // the data will be delete automatically after 1 month in v2
     return `This action removes a #${id} user`;
   }
 
@@ -42,11 +46,22 @@ export class UsersService {
     return await this.usersRepository.findOne({where: {email}});
   }
 
+  async findByEmailPassword(email: string): Promise<Users | null>{
+    return await this.usersRepository.createQueryBuilder()
+      .select("users")
+      .addSelect("users.password")
+      .from(Users, "users")
+      .where("users.email = :email", {email:email})
+      .getOne();
+  }
+
   async create(createUserDto : CreateUserDto) {
     // repo.create only creates a new instance of User but dont put it in DB 
     const entity:Users =  this.usersRepository.create(createUserDto);
+    entity.is_admin = false;
     // repo.save helps to insert if user doesn't contain id of the entityUser
     await this.usersRepository.save(entity);
   }
   
+
 } 

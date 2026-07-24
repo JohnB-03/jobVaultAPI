@@ -1,8 +1,10 @@
-import { Controller, Get, Body, Patch, Param, Delete, UseGuards, HttpStatus, HttpCode } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete, UseGuards, HttpStatus, HttpCode, Req, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { onlyAdmin } from '../authorization/roles.decorator';
 import { RolesGuard } from '../authorization/roles.guard';
+
+
 
 @Controller('users')
 export class UsersController {
@@ -16,10 +18,12 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get('me')
-  @HttpCode(HttpStatus.FOUND)
-  async findMe() {
-    return await this.usersService.findMe();
+  @HttpCode(HttpStatus.ACCEPTED)
+  async findMe(@Req() request: Request) {
+    //UseInterceptos helps to serialized the entity
+    return await this.usersService.findMe(request['user'].sub);;
   }
 
   @onlyAdmin()

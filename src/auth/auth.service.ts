@@ -18,7 +18,14 @@ export class AuthService {
       // if it's ok start hash password
       if(!await this.usersService.findByEmail(createUserDto.email)) {
          const hashPassword: string = await bcrypt.hash(createUserDto.password, Number(process.env.SALT_OR_ROUNDS));
-         const securedDto: CreateUserDto = {...createUserDto, password: hashPassword};
+         const securedDto: CreateUserDto = {
+            name: createUserDto.name,
+            first_name: createUserDto.first_name,
+            birthdate: createUserDto.birthdate, 
+            email: createUserDto.email,
+            password: hashPassword,
+
+         };
          await this.usersService.create(securedDto);
       } else {
          throw new ConflictException();
@@ -26,13 +33,13 @@ export class AuthService {
    }
 
    async logIn(signInDto: SignInDto): Promise<{access_Token:string}>{
-      const user: Users|null = await this.usersService.findByEmail(signInDto.email);
+      const user: Users|null = await this.usersService.findByEmailPassword(signInDto.email);
       // Check if mail exist
       if(user) {  
          const isMatch = await bcrypt.compare(signInDto.password, user.password);
          if(isMatch) {
             //créer le token ici
-            const payload = {sub: user.id, isAdmin:false}
+            const payload = {sub: user.id, isAdmin:user.is_admin}
             const access_Token: string = await this.jwtService.signAsync(payload);
             //inclure le type et le temps de durée du token;
             return {access_Token};

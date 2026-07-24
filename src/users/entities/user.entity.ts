@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity()
@@ -35,9 +36,11 @@ export class Users {
       "varchar" ,
       {
          length: 255, 
-         nullable: false
+         nullable: false, 
+         select: false
       }
    )
+   @Exclude()
    password!: string
 
    @CreateDateColumn()
@@ -46,7 +49,9 @@ export class Users {
    @Column(
       {
          nullable: false,
-         default: false}
+         default: false,
+         update: false
+      }
    )
    is_admin!: boolean
 }
